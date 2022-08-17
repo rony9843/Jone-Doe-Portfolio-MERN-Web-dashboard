@@ -20,6 +20,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -45,5 +47,17 @@
   },
   "devDependencies": {
     "gh-pages": "^4.0.0"
-  }
+  },
+  "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rony9843/rony9843-Jone-Doe-Portfolio-MERN-Web-dashboard.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rony9843/rony9843-Jone-Doe-Portfolio-MERN-Web-dashboard/issues"
+  },
+  "homepage": "https://github.com/rony9843/rony9843-Jone-Doe-Portfolio-MERN-Web-dashboard#readme"
 }
