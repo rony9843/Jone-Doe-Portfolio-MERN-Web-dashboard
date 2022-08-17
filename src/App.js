@@ -33,7 +33,10 @@ function App() {
       </h1>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Layout />}></Route>
+          <Route
+            path="/Jone-Doe-Portfolio-MERN-Web-dashboard/"
+            element={<Layout />}
+          ></Route>
           <Route path="/dashboard/:optionName" element={<Layout />}></Route>
         </Routes>
       </BrowserRouter>
