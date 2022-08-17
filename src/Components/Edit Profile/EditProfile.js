@@ -1,3 +1,4 @@
+import DeleteIcon from "@mui/icons-material/Delete";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import InstagramIcon from "@mui/icons-material/Instagram";
@@ -29,9 +30,8 @@ export default function EditProfile() {
   const [skillList, setSkillList] = useState([
     "UX Designer.",
     "Content Written.",
-    "UI Designer.",
-    "Content Written.",
-    "Content Written.",
+    "Logo Design",
+    "Banner Design",
   ]);
 
   const [inputSkill, setInputSkill] = useState([""]);
@@ -39,6 +39,12 @@ export default function EditProfile() {
   const submitSkill = () => {
     inputSkill !== "" && setSkillList([...skillList, inputSkill]);
     setInputSkill("");
+  };
+
+  const deleteSkill = (props) => {
+    const newSkill = skillList.filter((sk) => sk !== props);
+
+    setSkillList(newSkill);
   };
 
   // * text animation array
@@ -383,7 +389,13 @@ export default function EditProfile() {
                             </div>
                             <div className="preview_skill_box mt-1">
                               {skillList.map((sk) => (
-                                <div className="">{sk}</div>
+                                <div className="">
+                                  {sk}{" "}
+                                  <DeleteIcon
+                                    className="delete_btn"
+                                    onClick={() => deleteSkill(sk)}
+                                  />
+                                </div>
                               ))}
                             </div>
                           </div>
@@ -608,6 +620,13 @@ const EditProfileback = styled.div`
     font-size: 15px;
     color: #6259ca;
     display: inline-block;
+  }
+  .delete_btn {
+    transition: 0.5s;
+  }
+  .delete_btn:hover {
+    color: red;
+    cursor: pointer;
   }
 
   .preview_display {
