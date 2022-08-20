@@ -5,26 +5,185 @@ import InstagramIcon from "@mui/icons-material/Instagram";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import Button from "@mui/material/Button";
-import React, { useState } from "react";
+import Slide from "@mui/material/Slide";
+import Snackbar from "@mui/material/Snackbar";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import TextTransition, { presets } from "react-text-transition";
 import styled from "styled-components";
-import profileImage from "../../Assat/profileImage.jpg";
+import profileImage from "../../Asset/profileImage.jpg";
 
 export default function EditProfile() {
   // * get option name
   const { optionName } = useParams();
 
+  // * get notification
+
+  function TransitionLeft(props) {
+    return <Slide {...props} direction="left" />;
+  }
+
+  const [open, setOpen] = React.useState(false);
+  const [transition, setTransition] = React.useState(undefined);
+
+  const handleClick = (Transition) => {
+    setTransition(() => Transition);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  // * start profile image function
+
   // ? for getImage
   const [profileImageState, setProfileImageState] = useState("");
+
+  // ? for get row Image
+  const [rowProfileImageState, setRowProfileImageState] = useState("");
+
+  // * useEffect for fetch profile image url
+  useEffect(() => {
+    fetch("http://localhost:4000/editProfile")
+      .then((response) => response.json())
+      .then((json) => {
+        setProfileImageState(json.image_url.url);
+      });
+  }, []);
+
+  // * get profile image
+  const getProfilePic = (props) => {
+    setRowProfileImageState(props);
+    // set user profile image in img src
+    const [file] = props.target.files;
+    setProfileImageState(URL.createObjectURL(file));
+  };
+
+  // ~ upload profile image in cloudinary
+  const submitProfileImageInDatabase = () => {
+    const files = rowProfileImageState.target.files;
+
+    const data = new FormData();
+    data.append("file", files[0]);
+    data.append("upload_preset", "rrkyxjsa");
+
+    fetch("https://api.cloudinary.com/v1_1/ddcppphbi/image/upload", {
+      method: "POST", // or 'PUT'
+      body: data,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        sendProfileImageInServer(data.url);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+
+  // ~ send image link in server
+  const sendProfileImageInServer = (props) => {
+    // ^ send image url in server
+    fetch("http://localhost:4000/editProfile", {
+      method: "PATCH", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        profileImageLink: props,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Success:", data);
+        handleClick(TransitionLeft);
+        setProfileImageState(data.image_url);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+
+  // ! end profile image function
+
+  // * start Title function
 
   // ? for get user Title
   const [inputProfileTitle, setInputProfileTitle] = useState(
     "WELCOME TO MY WORLD"
   );
 
+  // * useEffect for fetch profile top title
+  useEffect(() => {
+    fetch("http://localhost:4000/editProfile/getProfileTitle")
+      .then((response) => response.json())
+      .then((json) => {
+        setInputProfileTitle(json.message.topTitle);
+      });
+  }, []);
+
+  // ~ post top title in database
+  const postTopTitle = () => {
+    fetch("http://localhost:4000/editProfile/updateProfileTitle", {
+      method: "PATCH", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: inputProfileTitle,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        handleClick(TransitionLeft);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+
+  // ! end title function
+
+  // * start profile name function
+
   // ? for get user Name
+
   const [inputProfileName, setInputProfileName] = useState("Hi, I’m Jone Doe");
+
+  // * useEffect for fetch profile top title
+  useEffect(() => {
+    fetch("http://localhost:4000/editProfile/getProfileName")
+      .then((response) => response.json())
+      .then((json) => {
+        setInputProfileName(json.message.ProfileName);
+      });
+  }, []);
+
+  // ~ post top title in database
+  const ProfileNameSubmit = () => {
+    fetch("http://localhost:4000/editProfile/updateProfileTName", {
+      method: "PATCH", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: inputProfileName,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        handleClick(TransitionLeft);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+
+  // ! end profile name function
+
+  // ? for get user Bottom Title
+  const [inputProfileBottomTitle, setInputProfileBottomTitle] =
+    useState("based in USA.");
 
   // ? for submit skill
   const [skillList, setSkillList] = useState([
@@ -91,18 +250,21 @@ export default function EditProfile() {
     },
   ];
 
-  // * get profile image
-  const getProfilePic = (props) => {
-    // set user profile image in img src
-    const [file] = props.target.files;
-    setProfileImageState(URL.createObjectURL(file));
-  };
-
   return (
     <EditProfileback className="pt-5 px-5 ">
       <div className="w-100 px-3">
         <div style={{ color: "#d0d0e2", fontSize: "15px" }}>
           Dashboard / {optionName}
+        </div>
+        <div>
+          <Snackbar
+            open={open}
+            severity="success"
+            onClose={handleClose}
+            TransitionComponent={transition}
+            message="<-- Successful -->"
+            key={transition ? transition.name : ""}
+          />
         </div>
       </div>
       <div className="row w-100 pb-5 mb-5">
@@ -149,13 +311,18 @@ export default function EditProfile() {
                                 backgroundColor: `${
                                   profileImageState && "#6259ca"
                                 }`,
-                                color: `${profileImageState && "#0e0e23"}`,
+                                color: `${
+                                  profileImageState ? "#0e0e23" : "#6259ca"
+                                }`,
+                                border: `${
+                                  !profileImageState && "1px solid #6259ca"
+                                }`,
                               }}
                               variant={
                                 profileImageState ? "contained" : "outlined"
                               }
                               onClick={() => {
-                                setProfileImageState("");
+                                profileImageState && setProfileImageState("");
                               }}
                             >
                               Cancel
@@ -165,11 +332,20 @@ export default function EditProfile() {
                             <Button
                               className="px-4"
                               size="small"
+                              onClick={() => {
+                                profileImageState &&
+                                  submitProfileImageInDatabase();
+                              }}
                               style={{
                                 backgroundColor: `${
                                   profileImageState && "#6259ca"
                                 }`,
-                                color: `${profileImageState && "#0e0e23"}`,
+                                color: `${
+                                  profileImageState ? "#0e0e23" : "#6259ca"
+                                }`,
+                                border: `${
+                                  !profileImageState && "1px solid #6259ca"
+                                }`,
                               }}
                               variant={
                                 profileImageState ? "contained" : "outlined"
@@ -239,11 +415,17 @@ export default function EditProfile() {
                               <Button
                                 className="px-4"
                                 size="small"
+                                onClick={() => postTopTitle()}
                                 style={{
                                   backgroundColor: `${
                                     inputProfileTitle && "#6259ca"
                                   }`,
-                                  color: `${inputProfileTitle && "#0e0e23"}`,
+                                  color: `${
+                                    inputProfileTitle ? "#0e0e23" : "#6259ca"
+                                  }`,
+                                  border: `${
+                                    !inputProfileTitle && "1px solid #6259ca"
+                                  }`,
                                 }}
                                 variant={
                                   inputProfileTitle ? "contained" : "outlined"
@@ -315,6 +497,7 @@ export default function EditProfile() {
                             <div>
                               <Button
                                 className="px-4"
+                                onClick={() => ProfileNameSubmit()}
                                 size="small"
                                 style={{
                                   backgroundColor: `${
@@ -406,7 +589,80 @@ export default function EditProfile() {
                 </div>
               </div>
               <div className="col-md-6 col-sm-12">
-                <div className="edit_profile_social_div p-2 ">
+                <div className="edit_profile_bottom_title_div p-2 ">
+                  <div className="d-flex ">
+                    <div>
+                      <div className="edit_profile_bottom_title_  row">
+                        <div>
+                          <div class=" ">
+                            <label
+                              style={{ color: "#d0d0e2" }}
+                              for="exampleInputBottomTitle"
+                              class="form-label"
+                            >
+                              Bottom Title
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control "
+                              maxlength="20"
+                              onChange={(e) =>
+                                setInputProfileBottomTitle(e.target.value)
+                              }
+                              value={inputProfileBottomTitle}
+                              id="exampleInputBottomTitle"
+                            />
+                          </div>
+                        </div>
+                        <div className="">
+                          <div className="col-12 d-flex justify-content-end pt-1 ">
+                            <span
+                              style={{ fontSize: "12px", color: "#d0d0e2" }}
+                            >
+                              MAX LENGTH : 20
+                            </span>
+                          </div>
+                          <div className="d-flex justify-content-between pb-1 pt-2">
+                            <div>
+                              <Button
+                                className="px-4"
+                                size="small"
+                                style={{
+                                  backgroundColor: `${"#6259ca"}`,
+                                  color: `${"#0e0e23"}`,
+                                }}
+                                variant={"contained"}
+                                onClick={() => {
+                                  setInputProfileBottomTitle("based in USA.");
+                                }}
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                            <div>
+                              <Button
+                                className="px-4"
+                                size="small"
+                                style={{
+                                  backgroundColor: `${
+                                    inputProfileTitle && "#6259ca"
+                                  }`,
+                                  color: `${inputProfileTitle && "#0e0e23"}`,
+                                }}
+                                variant={
+                                  inputProfileTitle ? "contained" : "outlined"
+                                }
+                              >
+                                Submit
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="edit_profile_social_div p-2 mt-3">
                   <div className="d-flex ">
                     <div>
                       <div className="edit_profile_social_  row">
@@ -495,8 +751,8 @@ export default function EditProfile() {
         </div>
         <div className="col-lg-4 col-md-6 col-sm-12  pt-4 px-4">
           <div className="preview_display d-flex justify-content-center">
-            <div className="row pt-5">
-              <div className="col-4 ">
+            <div className="d-flex justify-content-between pt-5">
+              <div className="px-3" style={{}}>
                 <div>
                   <img
                     src={profileImageState ? profileImageState : profileImage}
@@ -505,7 +761,7 @@ export default function EditProfile() {
                   />
                 </div>
               </div>
-              <div className="col-8">
+              <div className="">
                 <div className="">
                   <div>
                     <span className="preview_display_title">
@@ -520,7 +776,9 @@ export default function EditProfile() {
                       </TextTransition>
                     </span>
                   </div>
-                  <div className="preview_display_des">based in USA.</div>
+                  <div className="preview_display_des">
+                    {inputProfileBottomTitle}
+                  </div>
                   <div className="socialMediaIcon">
                     {socialMedia.map((dt) => dt.link !== "" && dt.icon)}
                   </div>
@@ -536,6 +794,11 @@ export default function EditProfile() {
 
 const EditProfileback = styled.div`
   color: white;
+  padding-bottom: 200px;
+
+  .MuiSnackbarContent-root {
+    background-color: green;
+  }
 
   .setting_side {
     //   background-color: #0e0e23;
@@ -587,6 +850,16 @@ const EditProfileback = styled.div`
   }
 
   .edit_profile_social_div input {
+    background-color: #978eff;
+    border: none;
+  }
+  .edit_profile_bottom_title_div {
+    height: auto;
+    background-color: #0e0e23;
+    border-radius: 10px;
+  }
+
+  .edit_profile_bottom_title_ input {
     background-color: #978eff;
     border: none;
   }

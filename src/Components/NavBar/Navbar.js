@@ -2,11 +2,12 @@ import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import SettingsIcon from "@mui/icons-material/Settings";
 import Badge from "@mui/material/Badge";
+import Button from "@mui/material/Button";
 import React from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
-import bangladeshIcon from "../../Assat/bangladesh.png";
-import NavProImage from "../../Assat/profileImage.jpg";
+import bangladeshIcon from "../../Asset/bangladesh.png";
+import NavProImage from "../../Asset/profileImage.jpg";
 
 export default function Navbar() {
   // react route dom v6
@@ -34,6 +35,33 @@ export default function Navbar() {
           </div>
           <div>
             <div className=" d-flex align-items-center">
+              <div className="px-4 ">
+                <a
+                  style={{ textDecoration: "none" }}
+                  href="https://rony9843.github.io/Jone-Doe-Portfolio-MERN-Web-client/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Button
+                    variant="outlined"
+                    className="px-3"
+                    style={{
+                      backgroundColor: "none",
+                      border: "1px solid #6259ca",
+                      color: "#6259ca",
+                      padding: "2px",
+                    }}
+                  >
+                    {" "}
+                    <span className="px-3">WEBSITE</span>
+                    <span
+                      class="spinner-grow spinner-grow-sm "
+                      role="status"
+                      aria-hidden="true"
+                    ></span>
+                  </Button>
+                </a>
+              </div>
               <div>
                 <img
                   src={bangladeshIcon}
