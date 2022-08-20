@@ -757,7 +757,6 @@ export default function EditProfile() {
                   <img
                     src={profileImageState ? profileImageState : profileImage}
                     alt="profile"
-                    srcset=""
                   />
                 </div>
               </div>
