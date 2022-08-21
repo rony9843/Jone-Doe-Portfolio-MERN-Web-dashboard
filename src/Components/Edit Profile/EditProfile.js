@@ -95,7 +95,6 @@ export default function EditProfile() {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Success:", data);
         handleClick(TransitionLeft);
         setProfileImageState(data.image_url);
       })
@@ -181,9 +180,44 @@ export default function EditProfile() {
 
   // ! end profile name function
 
+  // * start bottom title function
+
   // ? for get user Bottom Title
   const [inputProfileBottomTitle, setInputProfileBottomTitle] =
     useState("based in USA.");
+
+  // * useEffect for fetch profile top title
+  useEffect(() => {
+    fetch("http://localhost:4000/editProfile/getProfileBottomTitle")
+      .then((response) => response.json())
+      .then((json) => {
+        setInputProfileBottomTitle(json.message.bottomTitle);
+      });
+  }, []);
+
+  // ~ post top title in database
+  const ProfileBottomTitleSubmit = () => {
+    fetch("http://localhost:4000/editProfile/updateProfileBottomTitle", {
+      method: "PATCH", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        BottomTitle: inputProfileBottomTitle,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        handleClick(TransitionLeft);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+
+  // ! end bottom title function
+
+  // * start skill function
 
   // ? for submit skill
   const [skillList, setSkillList] = useState([
@@ -195,16 +229,72 @@ export default function EditProfile() {
 
   const [inputSkill, setInputSkill] = useState([""]);
 
+  const [inputOneSkill, setInputOneSkill] = useState("");
+
+  const [callUseEffectSkill, setCallUseEffectSkill] = useState(false);
+
+  const filterSkill = (props) => {
+    const skName = props.map((sk) => sk.skill);
+
+    setSkillList(skName);
+  };
+
+  // * useEffect for fetch profile top title
+  useEffect(() => {
+    fetch("http://localhost:4000/editProfile/getProfileSkill")
+      .then((response) => response.json())
+      .then((json) => {
+        setInputSkill(json.ProfileSkill);
+
+        filterSkill(json.ProfileSkill);
+        setCallUseEffectSkill(false);
+      });
+  }, [callUseEffectSkill]);
+
+  // ~ post skill in database
   const submitSkill = () => {
-    inputSkill !== "" && setSkillList([...skillList, inputSkill]);
-    setInputSkill("");
+    fetch("http://localhost:4000/editProfile/postProfileSkill", {
+      method: "post", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        skillName: inputOneSkill,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        handleClick(TransitionLeft);
+        setCallUseEffectSkill(true);
+        setInputOneSkill("");
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
 
+  // ~ delete skill in database
   const deleteSkill = (props) => {
-    const newSkill = skillList.filter((sk) => sk !== props);
-
-    setSkillList(newSkill);
+    fetch("http://localhost:4000/editProfile/removeProfileSkill", {
+      method: "DELETE", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: props._id,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setCallUseEffectSkill(true);
+        handleClick(TransitionLeft);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
+
+  // ! end skill function
 
   // * text animation array
   const TEXTS = skillList;
@@ -267,8 +357,8 @@ export default function EditProfile() {
           />
         </div>
       </div>
-      <div className="row w-100 pb-5 mb-5">
-        <div className="col-lg-8 col-md-6 col-sm-12  pt-4 px-4">
+      <div className="row w-100  ">
+        <div className="col-lg-8 col-md-6 col-sm-12  pt-4 px-4 customizeOption">
           {" "}
           <div className="setting_side ">
             <div className="row">
@@ -539,10 +629,11 @@ export default function EditProfile() {
                                     class="form-control"
                                     aria-label="Recipient's username"
                                     aria-describedby="button-addon2"
+                                    maxlength="17"
                                     onChange={(e) =>
-                                      setInputSkill(e.target.value)
+                                      setInputOneSkill(e.target.value)
                                     }
-                                    value={inputSkill}
+                                    value={inputOneSkill}
                                   />
                                   <button
                                     class="btn btn-outline-secondary"
@@ -571,15 +662,16 @@ export default function EditProfile() {
                               </span>
                             </div>
                             <div className="preview_skill_box mt-1">
-                              {skillList.map((sk) => (
-                                <div className="">
-                                  {sk}{" "}
-                                  <DeleteIcon
-                                    className="delete_btn"
-                                    onClick={() => deleteSkill(sk)}
-                                  />
-                                </div>
-                              ))}
+                              {inputSkill &&
+                                inputSkill.map((sk) => (
+                                  <div className="">
+                                    {sk.skill}{" "}
+                                    <DeleteIcon
+                                      className="delete_btn"
+                                      onClick={() => deleteSkill(sk)}
+                                    />
+                                  </div>
+                                ))}
                             </div>
                           </div>
                         </div>
@@ -642,6 +734,7 @@ export default function EditProfile() {
                             <div>
                               <Button
                                 className="px-4"
+                                onClick={() => ProfileBottomTitleSubmit()}
                                 size="small"
                                 style={{
                                   backgroundColor: `${
@@ -793,7 +886,20 @@ export default function EditProfile() {
 
 const EditProfileback = styled.div`
   color: white;
-  padding-bottom: 200px;
+
+  .customizeOption {
+    overflow: auto;
+    height: 80vh;
+  }
+  .customizeOption::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .customizeOption {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
 
   .MuiSnackbarContent-root {
     background-color: green;
@@ -802,7 +908,7 @@ const EditProfileback = styled.div`
   .setting_side {
     //   background-color: #0e0e23;
     // border-radius: 10px;
-    height: 550px;
+    height: 500px;
   }
   .profile_image_file_input {
     padding-left: 10px;
