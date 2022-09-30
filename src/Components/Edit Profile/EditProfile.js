@@ -45,7 +45,7 @@ export default function EditProfile() {
 
   // * useEffect for fetch profile image url
   useEffect(() => {
-    fetch("http://localhost:4000/editProfile")
+    fetch("https://damp-ravine-37109.herokuapp.com/editProfile")
       .then((response) => response.json())
       .then((json) => {
         setProfileImageState(json.image_url.url);
@@ -84,7 +84,7 @@ export default function EditProfile() {
   // ~ send image link in server
   const sendProfileImageInServer = (props) => {
     // ^ send image url in server
-    fetch("http://localhost:4000/editProfile", {
+    fetch("https://damp-ravine-37109.herokuapp.com/editProfile", {
       method: "PATCH", // or 'PUT'
       headers: {
         "Content-Type": "application/json",
@@ -114,7 +114,7 @@ export default function EditProfile() {
 
   // * useEffect for fetch profile top title
   useEffect(() => {
-    fetch("http://localhost:4000/editProfile/getProfileTitle")
+    fetch("https://damp-ravine-37109.herokuapp.com/editProfile/getProfileTitle")
       .then((response) => response.json())
       .then((json) => {
         setInputProfileTitle(json.message.topTitle);
@@ -123,15 +123,18 @@ export default function EditProfile() {
 
   // ~ post top title in database
   const postTopTitle = () => {
-    fetch("http://localhost:4000/editProfile/updateProfileTitle", {
-      method: "PATCH", // or 'PUT'
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: inputProfileTitle,
-      }),
-    })
+    fetch(
+      "https://damp-ravine-37109.herokuapp.com/editProfile/updateProfileTitle",
+      {
+        method: "PATCH", // or 'PUT'
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: inputProfileTitle,
+        }),
+      }
+    )
       .then((response) => response.json())
       .then((data) => {
         handleClick(TransitionLeft);
@@ -151,7 +154,7 @@ export default function EditProfile() {
 
   // * useEffect for fetch profile top title
   useEffect(() => {
-    fetch("http://localhost:4000/editProfile/getProfileName")
+    fetch("https://damp-ravine-37109.herokuapp.com/editProfile/getProfileName")
       .then((response) => response.json())
       .then((json) => {
         setInputProfileName(json.message.ProfileName);
@@ -160,15 +163,18 @@ export default function EditProfile() {
 
   // ~ post top title in database
   const ProfileNameSubmit = () => {
-    fetch("http://localhost:4000/editProfile/updateProfileTName", {
-      method: "PATCH", // or 'PUT'
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: inputProfileName,
-      }),
-    })
+    fetch(
+      "https://damp-ravine-37109.herokuapp.com/editProfile/updateProfileTName",
+      {
+        method: "PATCH", // or 'PUT'
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: inputProfileName,
+        }),
+      }
+    )
       .then((response) => response.json())
       .then((data) => {
         handleClick(TransitionLeft);
@@ -188,7 +194,9 @@ export default function EditProfile() {
 
   // * useEffect for fetch profile top title
   useEffect(() => {
-    fetch("http://localhost:4000/editProfile/getProfileBottomTitle")
+    fetch(
+      "https://damp-ravine-37109.herokuapp.com/editProfile/getProfileBottomTitle"
+    )
       .then((response) => response.json())
       .then((json) => {
         setInputProfileBottomTitle(json.message.bottomTitle);
@@ -197,15 +205,18 @@ export default function EditProfile() {
 
   // ~ post top title in database
   const ProfileBottomTitleSubmit = () => {
-    fetch("http://localhost:4000/editProfile/updateProfileBottomTitle", {
-      method: "PATCH", // or 'PUT'
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        BottomTitle: inputProfileBottomTitle,
-      }),
-    })
+    fetch(
+      "https://damp-ravine-37109.herokuapp.com/editProfile/updateProfileBottomTitle",
+      {
+        method: "PATCH", // or 'PUT'
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          BottomTitle: inputProfileBottomTitle,
+        }),
+      }
+    )
       .then((response) => response.json())
       .then((data) => {
         handleClick(TransitionLeft);
@@ -241,7 +252,7 @@ export default function EditProfile() {
 
   // * useEffect for fetch profile top title
   useEffect(() => {
-    fetch("http://localhost:4000/editProfile/getProfileSkill")
+    fetch("https://damp-ravine-37109.herokuapp.com/editProfile/getProfileSkill")
       .then((response) => response.json())
       .then((json) => {
         setInputSkill(json.ProfileSkill);
@@ -253,15 +264,18 @@ export default function EditProfile() {
 
   // ~ post skill in database
   const submitSkill = () => {
-    fetch("http://localhost:4000/editProfile/postProfileSkill", {
-      method: "post", // or 'PUT'
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        skillName: inputOneSkill,
-      }),
-    })
+    fetch(
+      "https://damp-ravine-37109.herokuapp.com/editProfile/postProfileSkill",
+      {
+        method: "post", // or 'PUT'
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          skillName: inputOneSkill,
+        }),
+      }
+    )
       .then((response) => response.json())
       .then((data) => {
         handleClick(TransitionLeft);
@@ -275,15 +289,18 @@ export default function EditProfile() {
 
   // ~ delete skill in database
   const deleteSkill = (props) => {
-    fetch("http://localhost:4000/editProfile/removeProfileSkill", {
-      method: "DELETE", // or 'PUT'
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: props._id,
-      }),
-    })
+    fetch(
+      "https://damp-ravine-37109.herokuapp.com/editProfile/removeProfileSkill",
+      {
+        method: "DELETE", // or 'PUT'
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: props._id,
+        }),
+      }
+    )
       .then((response) => response.json())
       .then((data) => {
         setCallUseEffectSkill(true);

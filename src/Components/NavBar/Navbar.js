@@ -53,7 +53,9 @@ export default function Navbar() {
                     }}
                   >
                     {" "}
-                    <span className="px-3">WEBSITE</span>
+                    <span href="http://banglacat.info/" className="px-3">
+                      WEBSITE
+                    </span>
                     <span
                       class="spinner-grow spinner-grow-sm "
                       role="status"
